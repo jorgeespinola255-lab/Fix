@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FixFlow</title>
+<style>
+:root{--bg:#f6f7f9;--sf:#fff;--ln:#e3e6eb;--tx:#0f172a;--mu:#64748b;--ac:#1d4ed8;--as:#eff4ff;--ai:#1e3a8a;--bad:#be123c;--pos:#047857;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1218;--sf:#181c24;--ln:#2a303b;--tx:#e8ebf0;--mu:#97a1b1;--ac:#6b9bff;--as:#1b2744;--ai:#bcd0ff;--bad:#ff7a96;--pos:#4ade80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1218;--sf:#181c24;--ln:#2a303b;--tx:#e8ebf0;--mu:#97a1b1;--ac:#6b9bff;--as:#1b2744;--ai:#bcd0ff;--bad:#ff7a96;--pos:#4ade80;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:100px}
+main{max-width:640px;margin:0 auto;padding:14px}
+h1{font-size:20px;margin:6px 0 4px}h2{font-size:15px;margin:0 0 10px}
+.mu{color:var(--mu);font-size:13px;margin:0 0 10px}
+.box,.card{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:14px;margin:0 0 12px}
+.card{display:block;width:100%;text-align:left;color:inherit;font:inherit;cursor:pointer}
+label{display:block;font-size:13px;color:var(--mu);margin:0 0 10px}
+input,select,textarea{display:block;width:100%;margin-top:4px;padding:11px 10px;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--ln);border-radius:8px;min-height:44px}
+textarea{min-height:64px;resize:vertical}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+button{font:inherit;min-height:44px;border-radius:8px;cursor:pointer}
+.btn{background:var(--ac);color:#fff;border:0;padding:0 16px;font-weight:600}
+:root[data-theme="dark"] .btn{color:#0b1220}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#0b1220}}
+.sec{background:transparent;color:var(--tx);border:1px solid var(--ln);padding:0 14px}
+.dng{background:transparent;color:var(--bad);border:1px solid var(--bad);padding:0 14px}
+.lnk{background:none;border:0;color:var(--ac);padding:0;min-height:36px}
+.g{display:grid;gap:8px;grid-template-columns:1fr 1fr}.acts{display:flex;flex-wrap:wrap;gap:8px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--ln)}
+.row:last-child{border-bottom:0}.row span{min-width:0;overflow-wrap:anywhere}.row>span:last-child{flex:none;white-space:nowrap;overflow-wrap:normal;text-align:right}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.b{display:inline-block;font-size:12px;padding:2px 9px;border-radius:99px;background:var(--as);color:var(--ai);white-space:nowrap}
+.err{color:var(--bad);font-size:13px;margin:-4px 0 10px}
+.tot{font-size:18px;font-weight:700;display:flex;justify-content:space-between;padding-top:10px}.pos{color:var(--pos)}.neg{color:var(--bad)}.ar{font-style:normal;font-size:.7em;margin-right:4px;vertical-align:middle}
+nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;background:var(--sf);background:color-mix(in srgb,var(--sf) 90%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--ln);border-radius:22px;box-shadow:0 8px 24px rgba(15,23,42,.14);display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:6px}
+nav button{border:0;background:none;color:var(--mu);border-radius:16px;min-height:52px;padding:6px 0 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;transition:background .15s,color .15s}
+nav button[aria-current="page"]{background:var(--as);color:var(--ac);font-weight:600}
+.fab{position:fixed;right:16px;bottom:calc(92px + env(safe-area-inset-bottom,0px));box-shadow:0 2px 8px rgba(0,0,0,.25);border-radius:99px;padding:0 20px}
+.warn{background:var(--as);color:var(--ai);border-radius:8px;padding:8px 12px;font-size:13px;margin:0 0 12px}
+.tiles{display:grid;gap:8px;grid-template-columns:1fr 1fr;margin:0 0 12px}.tiles .card{margin:0}.big{font-size:24px;font-weight:700;display:block}.paper{background:#fff;border:1px solid var(--ln);border-radius:10px;padding:14px;margin:0 0 12px}
+.os{font-size:12px;line-height:1.4;color:#111}.os h3{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#1e3a8a;margin:0 0 3px;font-weight:700}.os p{margin:0}
+.os section{border:1px solid #d9dde3;border-radius:6px;padding:7px 9px;margin:0 0 8px;overflow-wrap:anywhere}
+.oh{display:flex;align-items:center;gap:10px;padding:0 0 10px;margin:0 0 10px;border-bottom:2px solid #1e3a8a}.oh img{max-height:46px;max-width:90px;object-fit:contain}
+.oh .on{flex:1;min-width:0}.oh .nm{font-size:16px;font-weight:700;overflow-wrap:anywhere}.oh .ct{color:#555;font-size:11px}
+.oh .onum{text-align:right;flex:none;color:#555;font-size:10px}.oh .onum b{display:block;font-size:18px;color:#1e3a8a;line-height:1.15}
+.og{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}.os .tc{font-size:10px;line-height:1.35;color:#333;white-space:pre-line}
+.of{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-top:14px;font-size:10px;color:#555}.of .sg{flex:1;max-width:240px;border-top:1px solid #111;padding-top:3px;text-align:center;color:#111}#toast:empty{display:none}#toast{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:14px;box-shadow:0 8px 24px rgba(15,23,42,.2);z-index:5}#sheet{display:none}
+@media print{@page{size:A4;margin:12mm}body{background:#fff;padding:0}body>*:not(#sheet){display:none!important}#sheet{display:block;color:#000;background:#fff;padding:0}#sheet .os{font-size:11px}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav aria-label="Principal" id="nav"></nav>
+<div id="toast" role="status"></div>
+<div id="sheet"></div>
+<script>
+const S=[["received","Recibido"],["diagnosing","En diagnóstico"],["awaiting_approval","Esperando aprobación"],["awaiting_part","Esperando repuesto"],["repairing","En reparación"],["ready","Listo para entregar"],["delivered","Entregado"],["cancelled","Cancelado"]];
+const L=Object.fromEntries(S);
+let db={customers:[],orders:[],moves:[],seq:1000,shop:{name:"",phone:"",address:"",warranty:30,terms:"Condiciones a definir por el taller. Este comprobante no es una factura."}};
+try{const r=localStorage.getItem("fixflow");if(r)db=Object.assign(db,JSON.parse(r))}catch(e){}
+let view="home",sel=null,q="",flt="open",errs={},calcOut="",notify=null,bf="month",bfrom="",bto="",berr="",cerr="";
+const save=()=>{try{localStorage.setItem("fixflow",JSON.stringify(db))}catch(e){}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money=n=>new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:2}).format(n||0);
+const dt=t=>t?new Intl.DateTimeFormat("es-AR",{day:"2-digit",month:"short",year:"numeric",timeZone:"America/Argentina/Buenos_Aires"}).format(new Date(t)):"—";
+const r2=n=>Math.round((n+Number.EPSILON)*100)/100;
+const sg=(n,t)=>{const c=n>0.004?"pos":n<-0.004?"neg":"";return `<span class="${c}">${c?`<i class="ar">${c==="pos"?"▲":"▼"}</i>`:""}${t??money(n)}</span>`};
+const lt=i=>r2(i.q*i.p*(1-(i.d||0)/100));
+const total=o=>r2(o.items.reduce((s,i)=>s+lt(i),0));
+const due=o=>o.final>0?o.final:total(o);
+const paidSum=o=>r2((o.pays||[]).reduce((s,p)=>s+p.a,0));
+const bal=o=>r2(due(o)-paidSum(o));
+const MT={cash:"Efectivo",transfer:"Transferencia"};
+const cust=id=>db.customers.find(c=>c.id===id)||{name:"(sin cliente)",phone:""};
+const digits=s=>String(s||"").replace(/\D/g,"");
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const ord=id=>db.orders.find(o=>o.id===id);
+
+function go(v,id){view=v;sel=id||null;errs={};calcOut="";notify=null;cerr="";$("toast").innerHTML="";render();window.scrollTo(0,0)}
+function norm(){db.moves=Array.isArray(db.moves)?db.moves:[];db.catalog=Array.isArray(db.catalog)?db.catalog:[];if(typeof db.shop.logo!=="string")db.shop.logo="";if(db.shop.terms==="Condiciones a definir por el taller. Este comprobante no es una factura.")db.shop.terms=TERMS0;db.orders.forEach(o=>{if(!Array.isArray(o.pays))o.pays=o.paid>0?[{id:uid(),a:o.paid,m:"cash",at:o.delAt||o.at}]:[]})}
+function render(){norm();
+  $("nav").innerHTML=[["home","Resumen","M4 4h6v7H4zM14 4h6v4h-6zM14 12h6v8h-6zM4 15h6v5H4z"],["list","Órdenes","M9 4h6v3H9zM7 5H5v16h14V5h-2M9 12h6M9 16h4"],["clients","Clientes","M16 20v-1a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v1M10 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M20 20v-1a4 4 0 0 0-3-3.9M15 4.2a3.5 3.5 0 0 1 0 6.6"],["balance","Balance","M3 7a2 2 0 0 1 2-2h13v4M3 7v11a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1H5a2 2 0 0 1-2-1M16 14h.01"],["shop","Taller","M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4"]].map(([k,l,ic])=>`<button onclick="go('${k}')" ${(view===k||(k==="list"&&(view==="new"||view==="detail"||view==="receipt"))||(k==="clients"&&view==="client")||(k==="home"&&view==="warr")||(k==="shop"&&view==="prices"))?'aria-current="page"':""}>${SV(ic)}<span>${l}</span></button>`).join("");
+  $("app").innerHTML=({home:vHome,balance:vBalance,receipt:vReceipt,warr:vWarr,prices:vPrices,list:vList,new:vNew,detail:vDetail,clients:vClients,client:vClient,shop:vShop})[view]();
+  if(view==="list")renderList();if(view==="warr")renderWarr();if(view==="prices")renderPrices();
+}
+const badge=s=>`<span class="b">${L[s]}</span>`;
+function orderCard(o){const c=cust(o.cid);return `<button class="card" onclick="go('detail','${o.id}')"><div class="top"><b>#${o.n} ${esc(o.brand)} ${esc(o.model)}</b>${badge(o.st)}</div><div class="mu" style="margin:4px 0 0">${esc(c.name)} · ${dt(o.at)} · ${money(due(o))}${due(o)>0?(bal(o)>0.004?` · saldo ${money(bal(o))}`:" · pagada"):""}</div></button>`}
+
+function showList(f){flt=f;q="";go("list")}
+const nim=s=>String(s||"").replace(/[^a-z0-9]/gi,"").toLowerCase();
+function chkImei(v){const w=$("imw");if(!w)return;const k=nim(v),r=k.length>=6?db.orders.filter(x=>nim(x.imei)===k):[];
+  w.innerHTML=r.length?`<div class="warn">Este equipo ya ingresó antes: ${r.slice(-3).map(x=>`<button type="button" class="lnk" onclick="go('detail','${x.id}')">#${x.n} (${dt(x.at)})</button>`).join(" · ")}</div>`:""}
+function reing(o){let h="";
+  if(o.claimOf&&ord(o.claimOf))h+=`<div class="warn">Reclamo de garantía de la orden <button class="lnk" onclick="go('detail','${o.claimOf}')">#${ord(o.claimOf).n}</button>.</div>`;
+  const k=nim(o.imei),r=k.length>=6?db.orders.filter(x=>x.id!==o.id&&nim(x.imei)===k):[];
+  if(r.length)h+=`<div class="warn">Este equipo ya había ingresado: ${r.map(x=>`<button class="lnk" onclick="go('detail','${x.id}')">#${x.n} (${dt(x.at)})</button>`).join(" · ")}</div>`;
+  return h}
+function claim(id){const o=ord(id),mk=()=>{const n=++db.seq,t=Date.now(),x={id:uid(),n,cid:o.cid,brand:o.brand,model:o.model,imei:o.imei||"",fault:`Reclamo de garantía de la orden #${o.n}. Falla original: ${o.fault}`,diag:"",phys:"",acc:"",est:"",at:t,st:"received",h:[{st:"received",at:t}],items:[],final:0,pays:[],wd:db.shop.warranty,delAt:null,claimOf:o.id};
+    db.orders.push(x);o.wnote=`${o.wnote?o.wnote+"\n":""}${dt(t)}: reclamo registrado en la orden #${n}.`;save();go("detail",x.id)};
+  if(o.delAt&&o.delAt+o.wd*864e5<Date.now())ask("La garantía de esta orden está vencida. ¿Crear el reclamo igualmente?",mk,"Crear reclamo");else mk()}
+const costOf=o=>r2(o.items.reduce((s,i)=>s+(i.cost||0)*i.q,0));
+function gan(o){if(!o.items.some(i=>i.cost!==undefined))return"";const c=costOf(o);
+  return `<div class="row"><span class="mu">Costo cargado</span><span>${money(c)}</span></div><div class="row"><span>Ganancia estimada</span><b>${sg(r2(due(o)-c))}</b></div><p class="mu" style="margin:6px 0 0">Las líneas sin costo cargado cuentan como 0.</p>`}
+function gBox(r){const dl=db.orders.filter(o=>o.st==="delivered"&&o.delAt>=r[0]&&o.delAt<=r[1]),ven=r2(dl.reduce((s,o)=>s+due(o),0)),cos=r2(dl.reduce((s,o)=>s+costOf(o),0)),cc=dl.filter(o=>o.items.some(i=>i.cost!==undefined)).length;
+  return `<div class="box"><h2>Ganancia de órdenes entregadas</h2>${dl.length?`<div class="row"><span>Ventas (${dl.length} orden${dl.length===1?"":"es"})</span><b>${money(ven)}</b></div><div class="row"><span>Costos cargados</span><b>${money(cos)}</b></div><div class="tot"><span>Ganancia</span><span>${sg(r2(ven-cos))}</span></div><p class="mu" style="margin:8px 0 0">Costos cargados en ${cc} de ${dl.length}. Lo que no tiene costo cuenta como 0, así que la ganancia puede verse mayor a la real. Es otra mirada: no se suma al balance de arriba.</p>`:`<p class="mu" style="margin:0">No hay órdenes entregadas en este período.</p>`}</div>`}
+function readyNag(){const now=Date.now(),L=db.orders.filter(o=>o.st==="ready").map(o=>{const h=[...o.h].reverse().find(x=>x.st==="ready");return{o,d:Math.floor((now-(h?h.at:o.at))/864e5)}}).filter(x=>x.d>=7).sort((a,b)=>b.d-a.d);
+  if(!L.length)return"";
+  return `<div class="box"><h2>Listos sin retirar (7 días o más)</h2>${L.map(({o,d})=>`<div class="row"><span><button class="lnk" onclick="go('detail','${o.id}')">#${o.n} ${esc(o.brand)} ${esc(o.model)}</button><br><span class="mu">${esc(cust(o.cid).name)} · hace ${d} días</span></span><button class="sec" onclick="waStatus('${o.id}')">Avisar</button></div>`).join("")}</div>`}
+let pfq="",pft="all",pfn=20;
+function vPrices(){const n=db.catalog.length;
+  return `<button class="lnk" onclick="go('shop')">← Volver a Taller</button><h1>Lista de precios</h1><p class="mu">${n} ítem${n===1?"":"s"}</p>
+<details class="box" ${cerr?"open":""}><summary style="cursor:pointer;font-weight:600;min-height:28px">+ Agregar ítem</summary><div style="margin-top:12px">
+<div class="g"><label>Tipo<select id="kt"><option>Repuesto</option><option>Mano de obra</option><option>Otro</option></select></label><label>Nombre<input id="kn" placeholder="Ej.: Pantalla Moto G32"></label>
+<label>Costo (opcional)<input id="kc" type="number" min="0" step="0.01" inputmode="decimal"></label><label>Precio de venta<input id="kp" type="number" min="0" step="0.01" inputmode="decimal"></label>
+<label>Calcular con<select id="km"><option value="m">Margen sobre el precio</option><option value="r">Recargo sobre el costo</option></select></label><label>Porcentaje<input id="kx" type="number" min="0" step="0.1" inputmode="decimal"></label></div>
+<p class="mu" style="margin:0 0 10px">Si dejás vacío el precio, se calcula con el costo y el porcentaje.</p>
+${cerr?`<div class="err">${cerr}</div>`:""}
+<button class="btn" onclick="addCat()">Agregar a la lista</button></div></details>
+<label>Buscar<input value="${esc(pfq)}" placeholder="Ej.: pantalla moto" oninput="pfq=this.value;pfn=20;renderPrices()"></label>
+<label>Tipo<select onchange="pft=this.value;pfn=20;renderPrices()">${[["all","Todos"],["Repuesto","Repuestos"],["Mano de obra","Mano de obra"],["Otro","Otros"]].map(([k,l])=>`<option value="${k}" ${pft===k?"selected":""}>${l}</option>`).join("")}</select></label><div id="pls"></div>`}
+function renderPrices(){const t=pfq.trim().toLowerCase(),r=db.catalog.filter(k=>(pft==="all"||k.t===pft)&&(!t||`${k.c} ${k.t}`.toLowerCase().includes(t))).sort((a,b)=>a.c.localeCompare(b.c)),v=r.slice(0,pfn);
+  $("pls").innerHTML=r.length?`<p class="mu">Mostrando ${v.length} de ${r.length}</p><div class="box">${v.map(k=>`<div class="row"><span>${esc(k.c)}<br><span class="mu">${esc(k.t)}${k.cost?` · costo ${money(k.cost)}`:""}</span></span><span style="display:flex;align-items:center;gap:6px"><input aria-label="Precio de ${esc(k.c)}" style="width:112px;margin:0" type="number" min="0" step="0.01" inputmode="decimal" value="${k.p}" onchange="updCat('${k.id}',this.value)"><button class="lnk" aria-label="Quitar ítem" onclick="rmCat('${k.id}')">✕</button></span></div>`).join("")}</div>${r.length>pfn?`<button class="sec" style="width:100%" onclick="pfn+=20;renderPrices()">Ver más (${r.length-pfn} restantes)</button>`:""}`
+  :`<div class="box"><b>${db.catalog.length?"Sin resultados":"Todavía no cargaste ítems"}</b><p class="mu" style="margin:6px 0 0">${db.catalog.length?"Probá con otra búsqueda o tipo.":"Tocá “+ Agregar ítem” para cargar tus repuestos y servicios."}</p></div>`}
+function bkNag(){if(!(db.orders.length||db.customers.length))return"";if(db.snoozeBk&&db.snoozeBk>Date.now())return"";
+  const d=db.lastBackup?Math.floor((Date.now()-db.lastBackup)/864e5):null;if(d!==null&&d<7)return"";
+  return `<div class="warn"><b>${d===null?"Todavía no hiciste ninguna copia de seguridad.":`Hace ${d} días que no hacés una copia de seguridad.`}</b><br>Si se borran los datos del navegador, se pierde todo.<div class="acts" style="margin-top:8px"><button class="btn" onclick="go('shop')">Hacer copia ahora</button><button class="sec" onclick="db.snoozeBk=Date.now()+864e5;save();render()">Más tarde</button></div></div>`}
+function saveEdit(id){const o=ord(id),c=cust(o.cid),v=i=>$(i).value.trim(),n=v("en"),p=v("ep"),b=v("eb"),m=v("em");let er="";
+  if(n.length<3)er="Ingresá nombre y apellido.";
+  else if(digits(p).length<8)er="Ingresá un teléfono válido (mínimo 8 dígitos).";
+  else if(!m)er="Ingresá el modelo del equipo.";
+  else{const d=db.customers.find(x=>x.id!==c.id&&digits(x.phone)===digits(p));if(d)er=`Ya existe otro cliente con ese teléfono (${d.name}).`}
+  if(er){errs.edit=er;render();[["en",n],["ep",p],["eb",b],["em",m]].forEach(([i,x])=>$(i).value=x);return}
+  c.name=n;c.phone=p;o.brand=b;o.model=m;errs={};save();render()}
+function saveCust(id){const c=db.customers.find(x=>x.id===id);if(!c)return;const n=$("cn2").value.trim(),p=$("cp2").value.trim();let er="";
+  if(n.length<3)er="Ingresá nombre y apellido.";else if(digits(p).length<8)er="Ingresá un teléfono válido (mínimo 8 dígitos).";
+  else{const d=db.customers.find(x=>x.id!==id&&digits(x.phone)===digits(p));if(d)er=`Ya existe otro cliente con ese teléfono (${d.name}).`}
+  if(er){errs.cust=er;render();$("cn2").value=n;$("cp2").value=p;return}
+  c.name=n;c.phone=p;errs={};save();render()}
+const TERMS0=`1. El taller revisa el equipo y presenta un presupuesto antes de reparar. No se realizan reparaciones sin la aprobación del cliente.
+2. El cliente declara ser el dueño del equipo o estar autorizado a dejarlo en reparación.
+3. Los equipos con humedad, golpes o intervenciones previas pueden tener fallas ocultas. El taller no se responsabiliza por daños de ese origen.
+4. El taller no se responsabiliza por la información almacenada en el equipo. Se recomienda hacer una copia de seguridad antes de dejarlo.
+5. Los equipos no retirados dentro de los 90 días desde el aviso de que están listos pueden generar cargos de depósito.
+6. La garantía cubre solo el trabajo realizado y el repuesto colocado, por el plazo informado. No cubre golpes, humedad ni mal uso.`;
+function sampleTerms(){const ap=()=>{db.shop.terms=TERMS0;save();render()};if(db.shop.terms&&db.shop.terms.trim()&&db.shop.terms!==TERMS0)ask("Se reemplazarán tus términos actuales por el texto de ejemplo. ¿Continuar?",ap,"Reemplazar");else ap()}
+let wf="active",wq="";
+function wList(){return db.orders.filter(o=>o.st==="delivered"&&o.delAt&&o.wd>0).map(o=>{const exp=o.delAt+o.wd*864e5;return{o,exp,on:exp>Date.now()}})}
+function vWarr(){const all=wList(),a=all.filter(x=>x.on).length,e=all.length-a;
+  return `<button class="lnk" onclick="go('home')">← Volver</button><h1>Garantías</h1><p class="mu">${a} vigente${a===1?"":"s"} · ${e} vencida${e===1?"":"s"}</p>
+<label>Buscar<input value="${esc(wq)}" placeholder="Cliente, equipo o número" oninput="wq=this.value;renderWarr()"></label>
+<label>Mostrar<select onchange="wf=this.value;renderWarr()">${[["active","Vigentes"],["expired","Vencidas"],["all","Todas"]].map(([k,l])=>`<option value="${k}" ${wf===k?"selected":""}>${l}</option>`).join("")}</select></label><div id="wl"></div>`}
+function renderWarr(){const t=wq.trim().toLowerCase(),
+  r=wList().filter(x=>(wf==="all"||(wf==="active"?x.on:!x.on))&&(!t||`${x.o.n} ${x.o.brand} ${x.o.model} ${cust(x.o.cid).name}`.toLowerCase().includes(t))).sort((a,b)=>wf==="active"?a.exp-b.exp:b.exp-a.exp);
+  $("wl").innerHTML=r.length?r.map(({o,exp,on})=>{const left=Math.ceil((exp-Date.now())/864e5),ago=Math.max(0,Math.floor((Date.now()-exp)/864e5));
+    const when=on?`quedan ${left} día${left===1?"":"s"}`:(ago===0?"venció hoy":`venció hace ${ago} día${ago===1?"":"s"}`);
+    return `<button class="card" onclick="go('detail','${o.id}')"><div class="top"><b>#${o.n} ${esc(o.brand)} ${esc(o.model)}</b><span class="b" style="${on?"":"background:transparent;border:1px solid var(--bad);color:var(--bad)"}">${on?"Vigente":"Vencida"}</span></div><div class="mu" style="margin:4px 0 0">${esc(cust(o.cid).name)} · entregado ${dt(o.delAt)} · vence ${dt(exp)} · ${when}${o.wnote?" · con notas":""}</div></button>`}).join(""):`<div class="box"><b>Sin garantías para mostrar</b><p class="mu" style="margin:6px 0 0">Aparecen las órdenes entregadas con garantía de más de 0 días.</p></div>`}
+let lerr="";
+function setLogo(f){if(!f)return;
+  if(!/^image\//.test(f.type)){lerr="El archivo debe ser una imagen.";render();return}
+  if(f.size>8e6){lerr="La imagen es demasiado grande (máximo 8 MB).";render();return}
+  const rd=new FileReader();
+  rd.onerror=()=>{lerr="No se pudo leer la imagen.";render()};
+  rd.onload=()=>{const im=new Image();
+    im.onerror=()=>{lerr="No se pudo abrir la imagen. Probá con un PNG o JPG.";render()};
+    im.onload=()=>{const k=Math.min(1,320/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*k)),h=Math.max(1,Math.round(im.height*k)),c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(im,0,0,w,h);
+      let u="";try{u=c.toDataURL(f.type==="image/jpeg"?"image/jpeg":"image/png",.9)}catch(e){}
+      if(!u||u.length>600000){lerr="La imagen resultó demasiado pesada. Probá con una más simple.";render();return}
+      db.shop.logo=u;lerr="";save();render()};
+    im.src=rd.result};
+  rd.readAsDataURL(f)}
+function rmLogo(){db.shop.logo="";save();render()}
+let askFn=null;
+function ask(msg,fn,label){askFn=fn;$("toast").innerHTML=`<b>${esc(msg)}</b><div class="acts" style="margin-top:10px"><button class="dng" onclick="askYes()">${label||"Confirmar"}</button><button class="sec" onclick="askNo()">Cancelar</button></div>`}
+function askYes(){const f=askFn;askFn=null;$("toast").innerHTML="";if(f)f()}
+function askNo(){askFn=null;$("toast").innerHTML=""}
+const SV=d=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+function pickCat(v){const k=db.catalog.find(x=>x.c.toLowerCase()===v.trim().toLowerCase());if(!k)return;$("it").value=k.t;$("ic").value=k.c;$("ip").value=k.p;$("iq").value=1;$("id").value=0;$("ik").value=k.cost||""}
+function addCat(){const ids=["kn","kt","kc","kx","km","kp"],val=Object.fromEntries(ids.map(i=>[i,$(i).value.trim()]));
+ const c=parseFloat(val.kc),x=parseFloat(val.kx);let p=parseFloat(val.kp);
+ const bad=s=>{cerr=s;render();ids.forEach(i=>$(i).value=val[i])};
+ if(val.kn.length<2)return bad("Escribí el nombre del ítem.");
+ if(isNaN(p)&&!isNaN(c)&&!isNaN(x)){if(c<0||x<0||(val.km==="m"&&x>=100))return bad("Revisá el costo y el porcentaje (el margen debe ser menor a 100 %).");p=r2(val.km==="m"?c/(1-x/100):c*(1+x/100))}
+ if(isNaN(p)||p<0)return bad("Ingresá el precio de venta, o costo y porcentaje para calcularlo.");
+ db.catalog.push({id:uid(),t:val.kt,c:val.kn,cost:isNaN(c)?0:c,p:r2(p)});cerr="";save();render()}
+function updCat(id,v){const i=db.catalog.find(x=>x.id===id),n=parseFloat(v);if(i&&n>=0){i.p=r2(n);save()}}
+function rmCat(id){ask("¿Quitar este ítem de la lista? Los presupuestos ya armados no cambian.",()=>{db.catalog=db.catalog.filter(x=>x.id!==id);save();render()},"Quitar")}
+function addPay(id){const o=ord(id),a=parseFloat($("pa").value),m=$("pm").value,bad=t=>{errs.pay=t;render();$("pa").value=isNaN(a)?"":a;$("pm").value=m};
+ if(!(a>0))return bad("Ingresá un monto mayor a 0.");
+ if(due(o)>0&&a>bal(o)+0.004)return bad(`El monto supera el saldo pendiente (${money(Math.max(0,bal(o)))}).`);
+ o.pays.push({id:uid(),a:r2(a),m,at:Date.now()});errs={};save();render()}
+function rmPay(id,x){ask("¿Quitar este pago?",()=>{ord(id).pays.splice(x,1);save();render()},"Quitar")}
+const ymd=t=>new Intl.DateTimeFormat("en-CA",{timeZone:"America/Argentina/Buenos_Aires"}).format(new Date(t));
+function range(){const now=Date.now(),t=ymd(now),st=s=>new Date(s+"T00:00:00-03:00").getTime(),en=s=>new Date(s+"T23:59:59.999-03:00").getTime();
+ if(bf==="today")return[st(t),en(t)];if(bf==="week")return[st(ymd(now-6*864e5)),en(t)];if(bf==="month")return[st(t.slice(0,8)+"01"),en(t)];
+ return bfrom&&bto&&bfrom<=bto?[st(bfrom),en(bto)]:null}
+function vBalance(){const r=range(),inR=t=>r&&t>=r[0]&&t<=r[1],ev=[];
+ db.orders.forEach(o=>o.pays.forEach(p=>{if(inR(p.at))ev.push({at:p.at,k:"pay",a:p.a,m:p.m,d:`Orden #${o.n} · ${cust(o.cid).name}`,oid:o.id})}));
+ db.moves.forEach(x=>{if(inR(x.at))ev.push({at:x.at,k:x.k,a:x.a,m:x.m,d:x.d,id:x.id})});
+ ev.sort((a,b)=>b.at-a.at);
+ const sum=f=>r2(ev.filter(f).reduce((s,e)=>s+e.a,0)),rep=sum(e=>e.k==="pay"),inc=sum(e=>e.k==="in"),exp=sum(e=>e.k==="out");
+ const net=m=>r2(sum(e=>e.m===m&&e.k!=="out")-sum(e=>e.m===m&&e.k==="out"));
+ const pend=r2(db.orders.filter(o=>o.st!=="cancelled").reduce((s,o)=>s+Math.max(0,bal(o)),0));
+ const msg=bf==="custom"&&bfrom&&bto&&bfrom>bto?"La fecha “desde” no puede ser posterior a “hasta”.":"Elegí las dos fechas para ver el balance.";
+ return `<h1>Balance</h1>
+<div class="box"><label>Período<select onchange="bf=this.value;render()">${[["today","Hoy"],["week","Últimos 7 días"],["month","Este mes"],["custom","Elegir fechas"]].map(([k,l])=>`<option value="${k}" ${bf===k?"selected":""}>${l}</option>`).join("")}</select></label>
+${bf==="custom"?`<div class="g"><label>Desde<input type="date" value="${bfrom}" onchange="bfrom=this.value;render()"></label><label>Hasta<input type="date" value="${bto}" onchange="bto=this.value;render()"></label></div>`:""}
+${r?"":`<p class="mu" style="margin:0">${msg}</p>`}</div>
+${r?`<div class="box"><div class="row"><span>Cobros de reparaciones</span><b>${sg(rep)}</b></div><div class="row"><span>Otros ingresos</span><b>${sg(inc)}</b></div><div class="row"><span>Gastos</span><b>${exp>0?sg(-exp,"−"+money(exp)):money(0)}</b></div><div class="tot"><span>Balance</span><span>${sg(r2(rep+inc-exp))}</span></div>
+<div class="row"><span class="mu">Efectivo (neto)</span><span>${sg(net("cash"))}</span></div><div class="row"><span class="mu">Transferencia (neto)</span><span>${sg(net("transfer"))}</span></div></div>`:""}
+${r?gBox(r):""}<p class="mu">Pendiente de cobro (órdenes no canceladas): ${money(pend)}</p>
+<div class="box"><h2>Registrar ingreso o gasto</h2>
+<div class="g"><label>Tipo<select id="mk"><option value="in">Ingreso</option><option value="out">Gasto</option></select></label><label>Monto<input id="ma" type="number" min="0" step="0.01" inputmode="decimal"></label>
+<label>Medio<select id="mm"><option value="cash">Efectivo</option><option value="transfer">Transferencia</option></select></label><label>Fecha<input id="mf" type="date" value="${ymd(Date.now())}"></label></div>
+<label>Concepto<input id="md" placeholder="Ej.: compra de repuestos, venta de funda"></label>
+${berr?`<div class="err">${berr}</div>`:""}
+<button class="btn" onclick="addMove()">Guardar movimiento</button>
+<p class="mu" style="margin:8px 0 0">Si la fecha queda fuera del período elegido, no aparece en la lista de abajo.</p></div>
+${r?`<div class="box"><h2>Movimientos del período</h2>${ev.length?ev.map(e=>`<div class="row"><span>${e.k==="pay"?`<button class="lnk" onclick="go('detail','${e.oid}')">${esc(e.d)}</button>`:esc(e.d)}<br><span class="mu">${dt(e.at)} · ${MT[e.m]||e.m} · ${e.k==="pay"?"Cobro":e.k==="in"?"Ingreso":"Gasto"}</span></span><span style="text-align:right"><b>${e.k==="out"?sg(-e.a,"−"+money(e.a)):sg(e.a)}</b>${e.k==="pay"?"":` <button class="lnk" aria-label="Quitar movimiento" onclick="rmMove('${e.id}')">✕</button>`}</span></div>`).join(""):`<p class="mu" style="margin:0">Sin movimientos en este período.</p>`}</div>`:""}`}
+function addMove(){const k=$("mk").value,a=parseFloat($("ma").value),m=$("mm").value,f=$("mf").value,d=$("md").value.trim();
+ const bad=t=>{berr=t;render();$("mk").value=k;$("ma").value=isNaN(a)?"":a;$("mm").value=m;$("mf").value=f;$("md").value=d};
+ if(!(a>0))return bad("Ingresá un monto mayor a 0.");
+ if(d.length<2)return bad("Escribí un concepto.");
+ if(!f)return bad("Elegí una fecha.");
+ db.moves.push({id:uid(),k,a:r2(a),m,d,at:f===ymd(Date.now())?Date.now():new Date(f+"T12:00:00-03:00").getTime()});berr="";save();render()}
+function rmMove(id){ask("¿Quitar este movimiento?",()=>{db.moves=db.moves.filter(x=>x.id!==id);save();render()},"Quitar")}
+function vHome(){
+ const now=Date.now(),open=db.orders.filter(o=>!["delivered","cancelled"].includes(o.st)),cnt=s=>db.orders.filter(o=>o.st===s).length;
+ const end=o=>new Date(o.est+"T23:59:59-03:00").getTime(),wn=wList().filter(x=>x.on).length;
+ const due=open.filter(o=>o.est&&end(o)<=now+3*864e5).sort((a,b)=>a.est.localeCompare(b.est));
+ const inc=db.orders.reduce((s,o)=>s+o.pays.filter(p=>p.at>=now-30*864e5).reduce((t,p)=>t+p.a,0),0);
+ const b30=r2(inc+db.moves.filter(x=>x.at>=now-30*864e5).reduce((s,x)=>s+(x.k==="in"?x.a:-x.a),0));
+ const T=(l,n,f)=>`<button class="card" onclick="showList('${f}')"><span class="mu" style="margin:0">${l}</span><span class="big">${n}</span></button>`;
+ return `${bkNag()}<h1>Resumen</h1><div class="tiles">${T("Órdenes abiertas",open.length,"open")}${T("En diagnóstico",cnt("diagnosing"),"diagnosing")}${T("Esperando repuesto",cnt("awaiting_part"),"awaiting_part")}${T("En reparación",cnt("repairing"),"repairing")}${T("Listas para entregar",cnt("ready"),"ready")}<div class="card"><span class="mu" style="margin:0">Cobrado (30 días)</span><span class="big">${sg(inc)}</span></div><div class="card" style="grid-column:1/-1"><span class="mu" style="margin:0">Balance (30 días) · cobros + ingresos − gastos</span><span class="big">${sg(b30)}</span></div></div>
+ <button class="card" onclick="go('warr')"><span class="mu" style="margin:0">Garantías vigentes (tocar para ver el detalle)</span><span class="big">${wn}</span></button>
+ <div class="box"><h2>Entregas próximas o atrasadas</h2>${due.length?due.map(o=>`<div class="row"><span><b>#${o.n}</b> ${esc(o.brand)} ${esc(o.model)}<br><span class="mu">${esc(cust(o.cid).name)}</span></span><span style="text-align:right">${end(o)<now?'<b style="color:var(--bad)">Atrasada</b>':"Próxima"}<br><button class="lnk" onclick="go('detail','${o.id}')">${dt(o.est+"T12:00:00")}</button></span></div>`).join(""):`<p class="mu" style="margin:0">No hay entregas previstas para los próximos 3 días.</p>`}</div>
+ ${readyNag()}<p class="mu">El cobrado suma los pagos de órdenes registrados en los últimos 30 días.</p>
+ <button class="btn" style="width:100%" onclick="go('new')">+ Nueva orden</button>`}
+function vList(){return `<div class="top"><h1>Órdenes</h1><button class="lnk" onclick="go('warr')">Garantías</button></div><p class="warn">Prototipo: los datos se guardan solo en este navegador.</p>
+<label>Buscar<input id="q" value="${esc(q)}" placeholder="Cliente, equipo, IMEI o número" oninput="q=this.value;renderList()"></label>
+<label>Estado<select onchange="flt=this.value;renderList()"><option value="open" ${flt==="open"?"selected":""}>Abiertas</option><option value="all" ${flt==="all"?"selected":""}>Todas</option>${S.map(([k,l])=>`<option value="${k}" ${flt===k?"selected":""}>${l}</option>`).join("")}</select></label>
+<div id="lst"></div><button class="btn fab" onclick="go('new')">+ Nueva orden</button>`}
+function renderList(){const t=q.trim().toLowerCase();
+  const r=db.orders.filter(o=>(flt==="all"||(flt==="open"?!["delivered","cancelled"].includes(o.st):o.st===flt))&&(!t||`${o.n} ${o.brand} ${o.model} ${o.imei||""} ${nim(o.imei)} ${cust(o.cid).name}`.toLowerCase().includes(t))).sort((a,b)=>b.at-a.at);
+  $("lst").innerHTML=r.length?r.map(orderCard).join(""):`<div class="box"><b>${db.orders.length?"Sin resultados":"Todavía no hay órdenes"}</b><p class="mu" style="margin:6px 0 0">${db.orders.length?"Probá con otro filtro.":"Tocá “Nueva orden” para registrar el primer equipo."}</p></div>`}
+
+function vNew(){const e=errs;const f=k=>e[k]?`<div class="err">${e[k]}</div>`:"";
+return `<button class="lnk" onclick="go('list')">← Volver</button><h1>Nueva orden</h1>
+<form class="box" onsubmit="event.preventDefault();addOrder()" novalidate>
+<h2>Cliente</h2>
+<label>Nombre y apellido<input id="cn" list="cl" autocomplete="off" oninput="fillC(this.value)"><datalist id="cl">${db.customers.map(c=>`<option value="${esc(c.name)}">`).join("")}</datalist></label>${f("cn")}
+<label>Teléfono (con código de área)<input id="cp" inputmode="tel"></label>${f("cp")}
+<h2>Equipo</h2>
+<div class="g"><label>Marca<input id="ob"></label><label>Modelo<input id="om"></label></div>${f("om")}
+<label>IMEI o serie (opcional)<input id="oi" oninput="chkImei(this.value)" autocomplete="off"></label><div id="imw"></div>
+<label>Falla declarada<textarea id="of"></textarea></label>${f("of")}
+<label>Estado físico al recibirlo<textarea id="os" placeholder="Rayones, pantalla rota, humedad…"></textarea></label>
+<label>Accesorios entregados<input id="oa" placeholder="Cargador, funda, SIM…"></label>
+<label>Fecha estimada de entrega<input id="od" type="date"></label>
+<p class="mu">No pedimos ni guardamos el código de desbloqueo.</p>
+<button class="btn" style="width:100%">Crear orden</button></form>`}
+function fillC(v){const c=db.customers.find(c=>c.name.toLowerCase()===v.trim().toLowerCase());if(c)$("cp").value=c.phone}
+function addOrder(){
+  const v=id=>$(id).value.trim();errs={};
+  if(v("cn").length<3)errs.cn="Ingresá nombre y apellido.";
+  if(digits(v("cp")).length<8)errs.cp="Ingresá un teléfono válido (mínimo 8 dígitos).";
+  if(!v("om"))errs.om="Ingresá el modelo del equipo.";
+  if(v("of").length<3)errs.of="Describí la falla.";
+  if(Object.keys(errs).length){const keep=["cn","cp","ob","om","oi","of","os","oa","od"].map(i=>[i,v(i)]);render();keep.forEach(([i,x])=>$(i).value=x);chkImei($("oi").value);return}
+  let c=db.customers.find(c=>digits(c.phone)===digits(v("cp")));
+  if(!c){c={id:uid(),name:v("cn"),phone:v("cp")};db.customers.push(c)}
+  const o={id:uid(),n:++db.seq,cid:c.id,brand:v("ob"),model:v("om"),imei:v("oi"),fault:v("of"),diag:"",phys:v("os"),acc:v("oa"),est:v("od"),at:Date.now(),st:"received",h:[{st:"received",at:Date.now()}],items:[],final:0,paid:0,wd:db.shop.warranty,delAt:null};
+  db.orders.push(o);save();go("detail",o.id)}
+
+function vDetail(){const o=ord(sel);if(!o)return vList();const c=cust(o.cid);
+const set=(k,l,t="text")=>`<label>${l}<input type="${t}" value="${esc(o[k])}" onchange="upd('${o.id}','${k}',this.value)"></label>`;
+const ta=(k,l)=>`<label>${l}<textarea onchange="upd('${o.id}','${k}',this.value)">${esc(o[k])}</textarea></label>`;
+const warr=o.delAt?`<div class="box"><h2>Garantía</h2><label>Días de garantía<input type="number" min="0" value="${o.wd}" onchange="updN('${o.id}','wd',this.value,true)"></label><p class="mu" style="margin:0">Entregado el ${dt(o.delAt)} · vence el ${dt(o.delAt+o.wd*864e5)} (${Date.now()>o.delAt+o.wd*864e5?"vencida":"vigente"})</p><label style="margin:10px 0 0">Notas de revisión posterior<textarea placeholder="Ej.: el cliente volvió por el mismo problema y se revisó el equipo" onchange="upd('${o.id}','wnote',this.value)">${esc(o.wnote||"")}</textarea></label><div class="acts" style="margin-top:10px"><button class="sec" onclick="claim('${o.id}')">Crear reclamo de garantía</button></div></div>`:"";
+return `<button class="lnk" onclick="go('list')">← Volver</button>
+<div class="top"><h1>#${o.n} ${esc(o.brand)} ${esc(o.model)}</h1>${db.shop.logo?`<img src="${db.shop.logo}" alt="Logo del taller" style="max-height:40px;max-width:96px;border-radius:6px;background:#fff;padding:3px">`:""}</div>
+<p class="mu">${esc(c.name)} · ${esc(c.phone)} · recibido ${dt(o.at)}</p>
+${notify===o.id?`<div class="box"><b>¿Avisar al cliente?</b><p class="mu" style="margin:4px 0 10px">Se abrirá WhatsApp con un mensaje para el estado “${L[o.st]}”. Lo revisás antes de enviarlo.</p><div class="acts"><button class="btn" onclick="waStatus('${o.id}')">Avisar por WhatsApp</button><button class="sec" onclick="notify=null;render()">Ahora no</button></div></div>`:""}
+${reing(o)}<details id="ed" class="box" ${errs.edit?"open":""}><summary style="cursor:pointer;font-weight:600;min-height:28px">Editar cliente y equipo</summary><div style="margin-top:12px"><div class="g"><label>Nombre y apellido<input id="en" value="${esc(c.name)}"></label><label>Teléfono<input id="ep" inputmode="tel" value="${esc(c.phone)}"></label><label>Marca<input id="eb" value="${esc(o.brand)}"></label><label>Modelo<input id="em" value="${esc(o.model)}"></label></div>${errs.edit?`<div class="err">${errs.edit}</div>`:""}<p class="mu">Los cambios del cliente se aplican a todas sus órdenes.</p><button class="btn" onclick="saveEdit('${o.id}')">Guardar cambios</button></div></details>
+<div class="box"><label>Estado<select onchange="setSt('${o.id}',this.value)">${S.map(([k,l])=>`<option value="${k}" ${k===o.st?"selected":""}>${l}</option>`).join("")}</select></label>
+${ta("fault","Falla declarada")}${ta("diag","Diagnóstico técnico")}${ta("phys","Estado físico")}${set("acc","Accesorios")}${set("imei","IMEI / serie")}${set("est","Entrega estimada","date")}</div>
+<div class="box"><h2>Presupuesto</h2>
+${o.items.length?o.items.map((i,x)=>`<div class="row"><span>${esc(i.t)}: ${esc(i.c)}<br><span class="mu" style="margin:0">${i.q} × ${money(i.p)}${i.d?` · −${i.d}%`:""}</span></span><span><b>${money(lt(i))}</b> <button class="lnk" aria-label="Quitar línea" onclick="rm('${o.id}',${x})">✕</button></span></div>`).join(""):`<p class="mu">Agregá repuestos, mano de obra u otros conceptos.</p>`}
+<div class="tot"><span>Total estimado</span><span>${money(total(o))}</span></div>${gan(o)}
+<p class="mu">Un presupuesto no se registra como dinero cobrado.</p>
+<h2>Agregar línea</h2>${db.catalog.length?`<label>Buscar en la lista de precios<input id="pq" list="pl" autocomplete="off" placeholder="Escribí para buscar" oninput="pickCat(this.value)"><datalist id="pl">${db.catalog.map(k=>`<option value="${esc(k.c)}" label="${esc(k.t)} · ${money(k.p)}">`).join("")}</datalist></label>`:`<p class="mu">Cargá tus repuestos y servicios en Taller → Lista de precios para agregarlos más rápido.</p>`}
+<div class="g"><label>Tipo<select id="it"><option>Repuesto</option><option>Mano de obra</option><option>Otro</option></select></label><label>Concepto<input id="ic"></label>
+<label>Cantidad<input id="iq" type="number" min="1" value="1" inputmode="numeric"></label><label>Precio unitario<input id="ip" type="number" min="0" step="0.01" inputmode="decimal"></label></div>
+<div class="g"><label>Descuento % (opcional)<input id="id" type="number" min="0" max="100" value="0"></label><label>Costo unitario (opcional)<input id="ik" type="number" min="0" step="0.01" inputmode="decimal"></label></div>${errs.it?`<div class="err">${errs.it}</div>`:""}
+<button class="btn" onclick="addItem('${o.id}')">Agregar línea</button>
+<h2 style="margin-top:16px">Calcular precio de venta</h2>
+<div class="g"><label>Costo<input id="cc" type="number" min="0" step="0.01" inputmode="decimal" oninput="calc()"></label><label>Porcentaje<input id="cx" type="number" min="0" step="0.1" inputmode="decimal" oninput="calc()"></label></div>
+<label>Tipo de cálculo<select id="cm" onchange="calc()"><option value="m">Margen sobre el precio de venta</option><option value="r">Recargo sobre el costo</option></select></label>
+<p class="mu" id="co">Ingresá costo y porcentaje.</p></div>
+<div class="box"><h2>Cobros</h2><label>Importe final (opcional, reemplaza al total estimado)<input type="number" min="0" step="0.01" value="${o.final||""}" onchange="updN('${o.id}','final',this.value,true)"></label>
+<div class="row"><span>Importe a cobrar</span><b>${money(due(o))}</b></div>
+${(o.pays||[]).map((p,x)=>`<div class="row"><span>${dt(p.at)} · ${MT[p.m]||p.m}</span><span><b>${money(p.a)}</b> <button class="lnk" aria-label="Quitar pago" onclick="rmPay('${o.id}',${x})">✕</button></span></div>`).join("")}
+<div class="row"><span>Cobrado</span><b>${money(paidSum(o))}</b></div>
+<div class="row"><span>${bal(o)>0.004?"Saldo pendiente":due(o)>0?"Pagada por completo":"Saldo"}</span><b>${money(Math.max(0,bal(o)))}</b></div>
+<h2 style="margin-top:14px">Registrar pago</h2>
+<div class="g"><label>Monto<input id="pa" type="number" min="0" step="0.01" inputmode="decimal"></label><label>Medio<select id="pm"><option value="cash">Efectivo</option><option value="transfer">Transferencia</option></select></label></div>
+${errs.pay?`<div class="err">${errs.pay}</div>`:""}
+<div class="acts"><button class="btn" onclick="addPay('${o.id}')">Registrar pago</button>${bal(o)>0.004?`<button class="sec" onclick="$('pa').value=${bal(o)}">Cobrar saldo</button>`:""}</div></div>
+${warr}
+<div class="box"><h2>Historial de estados</h2>${o.h.slice().reverse().map(h=>`<div class="row"><span>${L[h.st]}</span><span class="mu">${new Intl.DateTimeFormat("es-AR",{dateStyle:"short",timeStyle:"short",timeZone:"America/Argentina/Buenos_Aires"}).format(new Date(h.at))}</span></div>`).join("")}</div>
+<div class="acts"><button class="btn" onclick="wa('${o.id}')">Compartir presupuesto</button><button class="sec" onclick="waStatus('${o.id}')">Avisar estado</button><button class="sec" onclick="go('receipt','${o.id}')">Ver orden de servicio</button><button class="dng" onclick="del('${o.id}')">Eliminar orden</button></div>`}
+function upd(id,k,v){ord(id)[k]=v;save()}
+function updN(id,k,v,keep){const n=Math.max(0,parseFloat(v)||0);ord(id)[k]=n;save();if(keep)render()}
+function setSt(id,s){const o=ord(id);o.st=s;o.h.push({st:s,at:Date.now()});if(s==="delivered"&&!o.delAt)o.delAt=Date.now();save();notify=id;render()}
+function rm(id,x){ord(id).items.splice(x,1);save();render()}
+function addItem(id){const v=i=>$(i).value.trim();const q=parseFloat(v("iq")),p=parseFloat(v("ip")),d=parseFloat(v("id"))||0;
+  if(!v("ic")||!(q>0)||!(p>=0)||v("ip")===""||d<0||d>100){errs.it="Completá concepto, cantidad (mayor a 0), precio y un descuento entre 0 y 100.";const o=ord(id);render();return}
+  const k=parseFloat(v("ik"));ord(id).items.push({t:v("it"),c:v("ic"),q,p,d,...(k>=0?{cost:k}:{})});errs={};save();render()}
+function calc(){const c=parseFloat($("cc").value),x=parseFloat($("cx").value),m=$("cm").value;let t;
+  if(isNaN(c)||isNaN(x)||c<0||x<0)t="Ingresá costo y porcentaje.";
+  else if(m==="m"&&x>=100)t="El margen debe ser menor a 100 %.";
+  else{const p=m==="m"?c/(1-x/100):c*(1+x/100);t=`Precio de venta sugerido: ${money(r2(p))} (ganancia ${money(r2(p-c))}).`;$("ip").value=r2(p)}
+  $("co").textContent=t}
+function del(id){ask(ord(id).pays&&ord(id).pays.length?"Esta orden tiene pagos registrados que dejarán de figurar en el balance. ¿Eliminarla igualmente?":"¿Eliminar esta orden? No se puede deshacer.",()=>{db.orders=db.orders.filter(o=>o.id!==id);save();go("list")},"Eliminar")}
+
+function msg(o){const c=cust(o.cid),s=db.shop;
+  return [`*${s.name||"Taller"}* – Orden #${o.n}`,`Equipo: ${o.brand} ${o.model}`.trim(),`Falla: ${o.fault}`,`Estado: ${L[o.st]}`,
+  ...o.items.map(i=>`• ${i.c} (${i.q}×) ${money(lt(i))}`),`Total estimado: ${money(total(o))}`,o.est?`Entrega estimada: ${dt(o.est+"T12:00:00")}`:"",s.phone?`Contacto: ${s.phone}`:""].filter(Boolean).join("\n")}
+function wa(id,text){const o=ord(id),p=digits(cust(o.cid).phone);
+  const to=p.startsWith("54")&&p.length>=12?p:"";
+  const body=text||msg(o),url=`https://wa.me/${to}?text=${encodeURIComponent(body)}`;let w=null;try{w=window.open(url,"_blank")}catch(e){}if(!w)waFallback(url,body)}
+let lastWa="";
+function waFallback(url,body){lastWa=body;$("toast").innerHTML=`<b>WhatsApp no se abrió solo.</b><p class="mu" style="margin:4px 0 10px">Tocá el enlace; si tampoco abre, copiá el mensaje y pegalo en el chat del cliente.</p><div class="acts"><a class="btn" style="display:inline-flex;align-items:center;text-decoration:none" href="${url}" target="_blank" rel="noopener noreferrer">Abrir WhatsApp</a><button class="sec" onclick="copyLast()">Copiar mensaje</button><button class="sec" onclick="$('toast').innerHTML=''">Cerrar</button></div>`}
+function copyLast(){const t=lastWa,done=ok=>{$("toast").innerHTML=ok?`<b>Mensaje copiado.</b><p class="mu" style="margin:4px 0 0">Abrí WhatsApp y pegalo en el chat del cliente.</p>`:`<b>No se pudo copiar.</b><p class="mu" style="margin:4px 0 0">Mantené apretado el texto del comprobante para copiarlo, o sacá una captura de pantalla.</p>`;setTimeout(()=>{$("toast").innerHTML=""},6000)};
+  const fb=()=>{const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}a.remove();done(ok)};
+  try{navigator.clipboard.writeText(t).then(()=>done(true),fb)}catch(e){fb()}}
+function waStatus(id){const o=ord(id);notify=null;wa(id,tmpl(o));render()}
+function tmpl(o){const c=cust(o.cid),n=c.name.split(" ")[0],s=db.shop,dev=`${o.brand} ${o.model}`.trim(),sig=s.name?`\n— ${s.name}`:"",amt=o.final>0?o.final:total(o);
+  const t={received:`recibimos tu ${dev} (orden #${o.n}). Te avisamos apenas tengamos novedades.`,
+  diagnosing:`estamos diagnosticando tu ${dev} (orden #${o.n}). Te contamos el resultado en breve.`,
+  awaiting_approval:`ya tenemos el presupuesto de tu ${dev} (orden #${o.n}): ${money(total(o))}. ¿Querés que avancemos con la reparación?`,
+  awaiting_part:`estamos esperando un repuesto para tu ${dev} (orden #${o.n}).${o.est?` Entrega estimada: ${dt(o.est+"T12:00:00")}.`:""}`,
+  repairing:`ya estamos reparando tu ${dev} (orden #${o.n}).`,
+  ready:`tu ${dev} (orden #${o.n}) está listo para retirar.${amt>0?(paidSum(o)>0?` Saldo a abonar: ${money(Math.max(0,amt-paidSum(o)))}.`:` Importe: ${money(amt)}.`):""}`,
+  delivered:`gracias por confiar en nosotros. Entregamos tu ${dev} (orden #${o.n}).${o.delAt&&o.wd?` Garantía hasta el ${dt(o.delAt+o.wd*864e5)}.`:""}`,
+  cancelled:`la orden #${o.n} de tu ${dev} quedó cancelada. Ante cualquier duda, escribinos.`}[o.st];
+  return `Hola ${n}, ${t}${sig}`}
+function receiptHtml(o){const c=cust(o.cid),s=db.shop,e=x=>esc(x)||"—";
+  return `<div class="os"><div class="oh">${s.logo?`<img src="${s.logo}" alt="">`:""}<div class="on"><div class="nm">${esc(s.name||"Taller")}</div><div class="ct">${[s.address,s.phone].filter(Boolean).map(esc).join(" · ")}</div></div><div class="onum">ORDEN DE SERVICIO<b>N.º ${o.n}</b>${dt(o.at)}</div></div>
+<div class="og"><section><h3>Cliente</h3><p><b>${esc(c.name)}</b><br>${esc(c.phone)}</p></section><section><h3>Equipo recibido</h3><p><b>${esc(`${o.brand} ${o.model}`.trim())}</b>${o.imei?`<br>IMEI/serie: ${esc(o.imei)}`:""}</p></section></div>
+<section><h3>Falla reportada</h3><p>${e(o.fault)}</p></section>
+<div class="og"><section><h3>Estado físico</h3><p>${e(o.phys)}</p></section><section><h3>Accesorios</h3><p>${e(o.acc)}</p></section></div>
+${s.terms?`<section><h3>Términos y condiciones</h3><p class="tc">${esc(s.terms)}</p></section>`:""}
+<div class="of"><span>Documento no fiscal. No es una factura.</span>${s.sign===false?"":`<div class="sg">Firma del cliente</div>`}</div></div>`}
+function receiptText(o){const c=cust(o.cid),s=db.shop,pd=paidSum(o),eq=`${o.brand} ${o.model}`.trim()+(o.imei?` (IMEI/serie ${o.imei})`:"");
+  return [`*${s.name||"Taller"}*${s.phone?" · "+s.phone:""}`,s.address,`Orden de servicio · N.º ${o.n}`,`Fecha: ${dt(o.at)}`,`Cliente: ${c.name}`,`Equipo: ${eq}`,`Falla declarada: ${o.fault}`,`Estado físico: ${o.phys||"—"}`,`Accesorios: ${o.acc||"—"}`,"Términos y condiciones:",s.terms,"Documento no fiscal."].filter(Boolean).join("\n")}
+function vReceipt(){const o=ord(sel);if(!o)return vList();
+  return `<button class="lnk" onclick="go('detail','${o.id}')">← Volver a la orden</button><h1>Orden de servicio</h1>
+<div class="paper">${receiptHtml(o)}</div>
+<div class="acts"><button class="btn" onclick="waReceipt('${o.id}')">Enviar por WhatsApp</button><button class="sec" onclick="copyReceipt('${o.id}')">Copiar texto</button><button class="sec" onclick="printSheet('${o.id}')">Imprimir o guardar PDF</button></div>
+<p class="mu" id="rm" style="margin-top:10px">Para guardarlo como imagen, sacá una captura de pantalla del comprobante.</p>`}
+function waReceipt(id){wa(id,receiptText(ord(id)))}
+function copyReceipt(id){const t=receiptText(ord(id));let ok=false;
+  const fb=()=>{const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{ok=document.execCommand("copy")}catch(e){}a.remove();$("rm").textContent=ok?"Texto copiado.":"No se pudo copiar. Usá la captura de pantalla o el botón de WhatsApp."};
+  try{navigator.clipboard.writeText(t).then(()=>{$("rm").textContent="Texto copiado."},fb)}catch(e){fb()}}
+function printSheet(id){$("sheet").innerHTML=receiptHtml(ord(id));if($("rm"))$("rm").textContent="Si no se abre la impresión, usá la captura de pantalla o el botón de WhatsApp.";try{window.print()}catch(e){}}
+
+function vClients(){return `<h1>Clientes</h1>${db.customers.length?db.customers.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(c=>{const os=db.orders.filter(o=>o.cid===c.id),last=Math.max(0,...os.map(o=>o.at));
+return `<button class="card" onclick="go('client','${c.id}')"><b>${esc(c.name)}</b><div class="mu" style="margin:4px 0 0">${esc(c.phone)} · ${os.length} orden(es) · última visita ${dt(last||null)}</div></button>`}).join(""):`<div class="box"><b>Sin clientes</b><p class="mu" style="margin:6px 0 0">Se crean al registrar una orden.</p></div>`}`}
+function vClient(){const c=db.customers.find(c=>c.id===sel);if(!c)return vClients();
+return `<button class="lnk" onclick="go('clients')">← Volver</button><h1>${esc(c.name)}</h1><p class="mu">${esc(c.phone)}</p><details class="box" ${errs.cust?"open":""}><summary style="cursor:pointer;font-weight:600;min-height:28px">Editar cliente</summary><div style="margin-top:12px"><div class="g"><label>Nombre y apellido<input id="cn2" value="${esc(c.name)}"></label><label>Teléfono<input id="cp2" inputmode="tel" value="${esc(c.phone)}"></label></div>${errs.cust?`<div class="err">${errs.cust}</div>`:""}<button class="btn" onclick="saveCust('${c.id}')">Guardar cliente</button></div></details><h2>Historial de reparaciones</h2>${db.orders.filter(o=>o.cid===c.id).sort((a,b)=>b.at-a.at).map(orderCard).join("")||`<p class="mu">Sin órdenes.</p>`}`}
+
+function exportDb(){db.lastBackup=Date.now();save();const t=JSON.stringify({app:"fixflow",v:1,at:Date.now(),data:db}),a=$("bk");a.value=t;a.focus();a.select();
+ $("bkm").textContent="Listo: el texto de arriba es tu copia. Pegálo ahora en tus notas, en un chat con vos mismo o en un correo.";
+ try{navigator.clipboard.writeText(t).then(()=>{$("bkm").textContent="Listo: el texto de arriba es tu copia y ya se copió al portapapeles. Pegálo ahora en tus notas, en un chat con vos mismo o en un correo."},()=>{})}catch(e){}}
+function importDb(){let p;try{p=JSON.parse($("bk").value)}catch(e){$("bkm").textContent="El texto no es una copia válida.";return}
+ const d=p&&p.app==="fixflow"?p.data:null;
+ if(!d||!Array.isArray(d.customers)||!Array.isArray(d.orders)||!d.orders.every(o=>o&&Array.isArray(o.items)&&Array.isArray(o.h))){$("bkm").textContent="El texto no es una copia válida de FixFlow.";return}
+ ask(`Se reemplazarán los datos actuales por la copia (${d.orders.length} órdenes, ${d.customers.length} clientes). ¿Continuar?`,()=>{
+ db=Object.assign(db,d);db.moves=Array.isArray(d.moves)?d.moves:[];db.catalog=Array.isArray(d.catalog)?d.catalog:[];db.seq=Math.max(db.seq||1000,...d.orders.map(o=>+o.n||0));save();go("home")},"Reemplazar")}
+function vShop(){const s=db.shop,f=(k,l,t="text")=>`<label>${l}<input type="${t}" value="${esc(s[k])}" onchange="db.shop.${k}=${t==="number"?"Math.max(0,+this.value||0)":"this.value"};save()"></label>`;
+return `<h1>Taller</h1><div class="box">${f("name","Nombre comercial")}${f("phone","Teléfono")}${f("address","Dirección")}${f("warranty","Garantía predeterminada (días)","number")}
+<label>Términos y condiciones (se imprimen en la orden de servicio)<textarea rows="9" style="min-height:160px" onchange="db.shop.terms=this.value;save()">${esc(s.terms)}</textarea></label><div class="acts" style="margin:0 0 10px"><button class="sec" onclick="sampleTerms()">Usar texto de ejemplo</button></div><label style="display:flex;align-items:center;gap:10px"><input type="checkbox" style="width:22px;min-height:22px;margin:0" ${s.sign!==false?"checked":""} onchange="db.shop.sign=this.checked;save()">Incluir línea de firma del cliente</label>
+<p class="mu">Todo lo que cargues acá (nombre, teléfono, dirección, logo y términos) se usa en la orden de servicio. El texto de ejemplo es editable: adaptalo a tu negocio y revisalo según la normativa aplicable. La orden de servicio no es una factura fiscal.</p></div>
+<div class="box"><h2>Logo del taller</h2>${s.logo?`<div style="background:#fff;border:1px solid var(--ln);border-radius:8px;padding:8px;display:inline-block;margin:0 0 10px"><img src="${s.logo}" alt="Logo del taller" style="max-width:160px;max-height:90px;display:block"></div>`:`<p class="mu">Todavía no cargaste un logo. Va a aparecer en el comprobante y en la orden.</p>`}
+<label>Elegir imagen (PNG o JPG)<input id="lg" type="file" accept="image/*" onchange="setLogo(this.files[0])"></label>${lerr?`<div class="err">${lerr}</div>`:""}
+${s.logo?`<button class="dng" onclick="rmLogo()">Quitar logo</button>`:""}</div>
+<div class="box"><h2>Lista de precios</h2><p class="mu">${db.catalog.length} ítem${db.catalog.length===1?"":"s"}. Repuestos y servicios con su precio, para armar presupuestos más rápido.</p><button class="btn" onclick="go('prices')">Abrir lista de precios</button></div>
+<div class="box"><h2>Copia de seguridad</h2><p class="mu"><b>Cómo hacerla:</b> 1) Tocá “Exportar copia”. 2) El texto de abajo ES tu copia: se copia solo. 3) Pegalo en tus notas, en un chat con vos mismo o en un correo. <b>Para recuperar tus datos:</b> pegá ese texto en el cuadro y tocá “Importar copia”.</p><div class="acts"><button class="btn" onclick="exportDb()">Exportar copia</button><button class="sec" onclick="importDb()">Importar copia</button></div><label style="margin-top:10px">Copia (texto)<textarea id="bk" rows="5" placeholder="Al exportar aparece acá. Para importar, pegá una copia y tocá Importar."></textarea></label><p class="mu" id="bkm">${db.lastBackup?`Última copia generada: ${dt(db.lastBackup)}.`:"Todavía no generaste ninguna copia."}</p></div>`}
+render();
+</script>
+</body>
+</html>
